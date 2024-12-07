@@ -13,6 +13,10 @@ nav ul {
 nav ul li {
     margin-right: 10px;
 }
+
+nav ul a {
+    color: black;
+}
   
 nav ul li:hover {
     background-color: lightslategray;
