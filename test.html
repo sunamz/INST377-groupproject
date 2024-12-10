@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Game Recommender</title>
+    <style>
+        .recommendations-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .recommendation-card {
+            background: rgba(21, 32, 43, 0.9);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .recommendation-img {
+            width: 120px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .recommendation-info {
+            flex-grow: 1;
+        }
+        
+        .recommendation-info h4 {
+            margin: 0 0 5px 0;
+            color: #fff;
+        }
+        
+        .recommendation-reason {
+            color: #8a8a8a;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        
+        .recommendation-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .tag {
+            background: rgba(103, 193, 245, 0.2);
+            color: #67c1f5;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        
+        .error {
+            color: #ff4444;
+            background-color: rgba(255, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+            * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1b2838;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #171a21;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #66c0f4;
+            margin-bottom: 20px;
+        }
+
+        .search-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 300px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #66c0f4;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #417a9b;
+        }
+
+        .info-text {
+            color: #66c0f4;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            padding: 10px;
+            background-color: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .profile-section, .games-section, .recommendations-section {
+            background-color: #2a475e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background-color: #1b2838;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .playtime {
+            color: #66c0f4;
+            font-size: 0.9em;
+        }
+        .error {
+            color: #ff4444;
+            background-color: rgba(255, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .debug-info {
+            font-family: monospace;
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 12px;
+            max-height: 100px;
+            overflow: auto;
+        }
+
+        .error {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.1);
+    padding: 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+    display: none;
+}
+</style>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Steam Game Recommender</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="steamId" placeholder="Enter Steam ID or Profile URL">
+                <button onclick="fetchUserData()">Search</button>
+            </div>
+            <p class="info-text">
+                Accepted formats:
+                • Full profile URL (e.g., https://steamcommunity.com/id/gaben)
+                • Custom URL name (e.g., gaben)
+                • Steam ID64 (e.g., 76561197960287930)
+                • Steam ID (e.g., STEAM_0:0:11101)
+            </p>
+        </section>
+
+        <div id="loading" class="loading">Loading...</div>
+        <div id="error" class="error"></div>
+
+        <section id="profileSection" class="profile-section">
+            <h2>Profile Information</h2>
+            <div class="profile-info">
+                <img id="profileAvatar" class="profile-avatar" src="" alt="Profile Avatar">
+                <div>
+                    <h3 id="profileName"></h3>
+                    <p id="profileStatus"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gamesSection" class="games-section">
+            <h2>Your Most Played Games</h2>
+            <div id="gamesGrid" class="games-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        const API_KEY = 'C64C097A0C347B224046BD0B009F6B16';
+
+        function parseSteamInput(input) {
+            // Remove whitespace
+            input = input.trim();
+            
+            // If empty input
+            if (!input) {
+                throw new Error('Please enter a Steam ID or profile URL');
+            }
+
+            // Handle full URLs
+            if (input.includes('steamcommunity.com')) {
+                const urlPattern = /(?:https?:\/\/)?steamcommunity\.com\/(?:profiles|id)\/([^\s/]+)/;
+                const match = input.match(urlPattern);
+                if (match) {
+                    input = match[1];
+                }
+            }
+
+            // If it's a 17-digit number (Steam64 ID)
+            if (/^\d{17}$/.test(input)) {
+                return { id: input, type: 'steam64' };
+            }
+
+            // If it's a custom URL name or other format, we'll need to resolve it
+            return { id: input, type: 'vanity' };
+        }
+
+        async function resolveVanityURL(vanityName) {
+            const proxyUrl = 'https://api.allorigins.win/get?url=';
+            const vanityUrl = `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${API_KEY}&vanityurl=${vanityName}`;
+            
+            const response = await fetch(proxyUrl + encodeURIComponent(vanityUrl));
+            const data = await response.json();
+            
+            if (data.contents) {
+                const result = JSON.parse(data.contents);
+                if (result.response.success === 1) {
+                    return result.response.steamid;
+                }
+            }
+            throw new Error('Could not resolve Steam ID. Please check if the profile exists and is public.');
+        }
+
+        async function fetchUserData() {
+            const userInput = document.getElementById('steamId').value;
+            
+            showLoading(true);
+            clearError();
+
+            try {
+                // Parse the user input
+                const steamInfo = parseSteamInput(userInput);
+                
+                // Get the Steam64 ID
+                let steam64Id;
+                if (steamInfo.type === 'steam64') {
+                    steam64Id = steamInfo.id;
+                } else {
+                    steam64Id = await resolveVanityURL(steamInfo.id);
+                }
+
+                // Using a CORS proxy service
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const playerUrl = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${API_KEY}&steamids=${steam64Id}`;
+                const gamesUrl = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${API_KEY}&steamid=${steam64Id}&include_appinfo=1&format=json`;
+
+                // Fetch player data
+                const playerResponse = await fetch(proxyUrl + encodeURIComponent(playerUrl));
+                const playerData = await playerResponse.json();
+                
+                if (playerData.contents) {
+                    const playerInfo = JSON.parse(playerData.contents);
+                    if (playerInfo.response.players.length > 0) {
+                        displayProfile(playerInfo.response.players[0]);
+                    } else {
+                        throw new Error('Steam profile not found');
+                    }
+                }
+
+                // Fetch games data
+                const gamesResponse = await fetch(proxyUrl + encodeURIComponent(gamesUrl));
+                const gamesData = await gamesResponse.json();
+
+                if (gamesData.contents) {
+                    const gamesInfo = JSON.parse(gamesData.contents);
+                    if (gamesInfo.response && gamesInfo.response.games) {
+                        displayGames(gamesInfo.response.games);
+                    } else {
+                        throw new Error('No games found or profile is private');
+                    }
+                }
+
+            } catch (error) {
+                handleError(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Rest of the functions remain the same
+        function displayProfile(player) {
+            const profileSection = document.getElementById('profileSection');
+            profileSection.style.display = 'block';
+            
+            document.getElementById('profileAvatar').src = player.avatarfull;
+            document.getElementById('profileName').textContent = player.personaname;
+            document.getElementById('profileStatus').textContent = getPlayerStatus(player.personastate);
+        }
+
+        function displayGames(games) {
+            const gamesSection = document.getElementById('gamesSection');
+            const gamesGrid = document.getElementById('gamesGrid');
+            gamesGrid.innerHTML = '';
+
+            const sortedGames = games
+                .filter(game => game.playtime_forever > 0)
+                .sort((a, b) => b.playtime_forever - a.playtime_forever)
+                .slice(0, 12);
+
+            sortedGames.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                
+                const imgUrl = game.img_icon_url ?
+                    `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg` :
+                    'https://via.placeholder.com/184x69/1b2838/66c0f4?text=Game';
+
+                gameCard.innerHTML = `
+                    <img src="${imgUrl}" 
+                         alt="${game.name}"
+                         onerror="this.src='https://via.placeholder.com/184x69/1b2838/66c0f4?text=Game'">
+                    <h3>${game.name}</h3>
+                    <p class="playtime">${Math.round(game.playtime_forever / 60)} hours played</p>
+                `;
+                gamesGrid.appendChild(gameCard);
+            });
+
+            gamesSection.style.display = 'block';
+        }
+
+        function getPlayerStatus(state) {
+            const states = {
+                0: 'Offline',
+                1: 'Online',
+                2: 'Busy',
+                3: 'Away',
+                4: 'Snooze',
+                5: 'Looking to Trade',
+                6: 'Looking to Play'
+            };
+            return states[state] || 'Unknown';
+        }
+
+        function handleError(error) {
+            console.error('Error:', error);
+            showError(error.message || 'An unexpected error occurred');
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function clearError() {
+            document.getElementById('error').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
