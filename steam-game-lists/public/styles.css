@@ -70,6 +70,12 @@ body {
     width: 100%;
 }
 
+.body-text {
+    width: 90%;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
 /* Search Section */
 .search-section {
     margin-bottom: 2rem;
@@ -111,6 +117,7 @@ body {
 .search-button:hover {
     background-color: #417a9b;
 }
+
 
 /* Games Grid */
 .games-grid {
