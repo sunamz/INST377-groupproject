@@ -239,28 +239,40 @@ function displayFavoriteGames(games) {
         const imgUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
         carousel.innerHTML += `
             <div class="swiper-slide">
-                <div class="game-card">
-                    <a href="https://store.steampowered.com/app/${game.appid}/" target="_blank">
-                        <img src="${imgUrl}" alt="${game.name}" class="game-image" 
-                             onerror="this.src='/api/placeholder/184/69'"/>
-                        <h3>${game.name}</h3>
-                        <p class="playtime"><i class="fas fa-clock"></i> ${Math.round(game.playtime_forever / 60)} hours</p>
+                <div class="game-card animate__animated animate__fadeIn">
+                    <img src="${imgUrl}" alt="${game.name}" class="game-image" 
+                         onerror="this.src='/api/placeholder/300/160'"/>
+                    <a href="https://store.steampowered.com/app/${game.appid}/" 
+                       target="_blank" 
+                       class="game-title">
+                        ${game.name}
                     </a>
+                    <div class="playtime">
+                        <i class="fas fa-clock"></i>
+                        ${Math.round(game.playtime_forever / 60)} hours played
+                    </div>
                 </div>
             </div>`;
     });
 
+    // Initialize Swiper
     new Swiper('.swiper-container', {
         slidesPerView: 1,
         spaceBetween: 30,
         loop: true,
+        centeredSlides: true,
+        autoplay: {
+            delay: 3500,
+            disableOnInteraction: false,
+        },
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
         pagination: {
             el: '.swiper-pagination',
-            clickable: true
+            clickable: true,
+            dynamicBullets: true
         },
         breakpoints: {
             640: {
@@ -271,6 +283,14 @@ function displayFavoriteGames(games) {
                 slidesPerView: 3,
                 spaceBetween: 30,
             }
+        },
+        effect: 'coverflow',
+        coverflowEffect: {
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: true
         }
     });
 }

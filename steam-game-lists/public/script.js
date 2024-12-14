@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function showError(message) {
     const errorDiv = document.getElementById('error');
     errorDiv.textContent = message;
+    errorDiv.className = 'error animate__animated animate__shakeX';
     errorDiv.style.display = 'block';
     
     setTimeout(() => {
@@ -34,14 +35,17 @@ function showError(message) {
     }, 5000);
 }
 
+
 function showSuccess(message) {
     const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
+    successDiv.className = 'success-message animate__animated animate__slideInRight';
     successDiv.textContent = message;
     document.body.appendChild(successDiv);
     
     setTimeout(() => {
-        successDiv.remove();
+        successDiv.classList.remove('animate__slideInRight');
+        successDiv.classList.add('animate__slideOutRight');
+        setTimeout(() => successDiv.remove(), 1000);
     }, 3000);
 }
 
@@ -133,9 +137,10 @@ function displayGames(games) {
     const container = document.getElementById('gamesContainer');
     container.innerHTML = '';
     
-    games.forEach(game => {
+    games.forEach((game, index) => {
         const gameCard = document.createElement('div');
-        gameCard.className = 'game-card';
+        gameCard.className = 'game-card animate__animated animate__fadeIn';
+        gameCard.style.animationDelay = `${index * 0.1}s`;
         
         const imgUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
         
@@ -145,12 +150,12 @@ function displayGames(games) {
                 <h3 class="game-card-title">${escapeHtml(game.name)}</h3>
                 <p class="playtime">${Math.round(game.playtime_forever / 60)} hours played</p>
                 <div class="game-actions">
-                    <button onclick="viewGameDetails(${game.appid})" class="view-details-btn">
+                    <button onclick="viewGameDetails(${game.appid})" class="view-details-btn animate__animated animate__fadeIn">
                         <i class="fas fa-info-circle"></i> Details
                     </button>
                     <button id="btn-${game.appid}" 
                             onclick="toggleGameSelection(${game.appid})" 
-                            class="toggle-list-btn ${selectedGames.has(game.appid) ? 'selected' : ''}">
+                            class="toggle-list-btn ${selectedGames.has(game.appid) ? 'selected' : ''} animate__animated animate__fadeIn">
                         <i class="fas ${selectedGames.has(game.appid) ? 'fa-check' : 'fa-plus'}"></i>
                         ${selectedGames.has(game.appid) ? 'Selected' : 'Add to List'}
                     </button>
@@ -350,13 +355,14 @@ function displayLists(lists) {
     container.innerHTML = '';
 
     if (lists.length === 0) {
-        container.innerHTML = '<div class="no-lists">No lists created yet</div>';
+        container.innerHTML = '<div class="no-lists animate__animated animate__fadeIn">No lists created yet</div>';
         return;
     }
 
-    lists.forEach(list => {
+    lists.forEach((list, index) => {
         const listElement = document.createElement('div');
-        listElement.className = 'list-card';
+        listElement.className = 'list-card animate__animated animate__fadeInUp';
+        listElement.style.animationDelay = `${index * 0.15}s`;
         
         listElement.innerHTML = `
             <div class="list-header">
@@ -367,7 +373,7 @@ function displayLists(lists) {
                         <i class="fas fa-gamepad"></i> ${list.list_games ? list.list_games.length : 0} games
                     </div>
                 </div>
-                <button class="delete-button" onclick="deleteList('${list.list_id}')">
+                <button class="delete-button animate__animated animate__fadeIn" onclick="deleteList('${list.list_id}')">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
