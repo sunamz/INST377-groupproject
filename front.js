@@ -1,1 +1,0 @@
-/*carousel with photos from user's favorite games?*/
