@@ -1,0 +1,151 @@
+/* About Page Specific Styles */
+.about-section,
+.features-section,
+.team-section,
+.guide-section,
+.contact-section {
+    background-color: #2a475e;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.about-section h1 {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    color: #66c0f4;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Features Grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.feature-card {
+    background-color: #1b2838;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card i {
+    font-size: 1.5rem;
+    color: #66c0f4;
+    margin-bottom: 1rem;
+}
+
+/* Team Grid */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.team-card {
+    background-color: #1b2838;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+}
+
+.team-card strong {
+    color: #ffffff;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.team-card .role {
+    color: #66c0f4;
+    margin-bottom: 0.5rem;
+}
+
+.team-card .description {
+    color: #c7d5e0;
+}
+
+/* Guide Section */
+.guide-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.guide-card {
+    background-color: #1b2838;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.guide-card ul {
+    list-style: none;
+    padding-left: 1.5rem;
+}
+
+.guide-card li {
+    color: #c7d5e0;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.guide-card li:before {
+    content: "•";
+    color: #66c0f4;
+    position: absolute;
+    left: -1rem;
+}
+
+/* Contact Section */
+.contact-section {
+    background-color: #1b2838;
+}
+
+.contact-section p {
+    color: #c7d5e0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .features-grid,
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-section,
+    .features-section,
+    .team-section,
+    .guide-section,
+    .contact-section {
+        padding: 1.5rem;
+    }
+}

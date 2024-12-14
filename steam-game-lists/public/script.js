@@ -78,8 +78,6 @@ async function parseSteamInput(input) {
     }
 }
 
-// In script.js, update the fetchUserGames function
-
 async function fetchUserGames() {
     const steamId = document.getElementById('steamId').value;
     const gamesContainer = document.getElementById('gamesContainer');
@@ -120,23 +118,6 @@ async function fetchUserGames() {
                 .slice(0, 10);
             
             localStorage.setItem('favoriteGames', JSON.stringify(topGames));
-                
-            try {
-                const favoriteResponse = await fetch('/api/favorites/' + resolvedSteamId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ games: topGames })
-                });
-
-                if (!favoriteResponse.ok) {
-                    throw new Error('Failed to store favorites');
-                }
-            } catch (error) {
-                console.error('Error storing favorites:', error);
-                showError('Failed to update favorites, but games loaded successfully');
-            }
             
             displayGames(currentGames);
             fetchUserLists(resolvedSteamId);

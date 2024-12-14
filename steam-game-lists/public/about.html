@@ -3,71 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
+    <title>About Steam Lists</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="about.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-
     <nav class="navbar">
         <div class="nav-brand">
             <i class="fab fa-steam"></i>
             <span>Steam Lists</span>
         </div>
         <div class="nav-links">
-            <a href="/" class="active"><i class="fas fa-home"></i> Home</a>
-            <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="about.html" class="active"><i class="fas fa-info-circle"></i> About</a>
             <a href="details.html"><i class="fas fa-star"></i> Recommendations</a>
         </div>
     </nav>
     
-    <div class="body-text">
-        <h1>About</h1>
-        <p>
-            Steam Lists allows you to look up your game library, see details on the games 
-            you own, and create lists. You can also see some insights on your favorite games 
-            and receive recommendations for new games.
-        </p>
-        <br>
+    <div class="main-content">
+        <div class="about-section">
+            <h1>About Steam Lists</h1>
+            <p>
+                Welcome to Steam Lists - your personal gaming companion! Our platform helps you organize, 
+                analyze, and discover games in your Steam library. Whether you're a casual gamer or a 
+                dedicated enthusiast, Steam Lists provides powerful tools to enhance your gaming experience.
+            </p>
+        </div>
 
-        <h2> Group Members </h2>
-        <ul>
-            <li>Minh Chu</li>
-            <li>Devin Perry</li>
-            <li>Alice Sun</li>
-        </ul>
-        <br>
+        <div class="features-section">
+            <h2><i class="fas fa-star"></i> Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>Library Management</h3>
+                    <p>Access and organize your entire Steam game collection in one place, with detailed information about each title.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-list"></i>
+                    <h3>Custom Lists</h3>
+                    <p>Create personalized game collections - perfect for organizing "Games to Play", "Favorites", or any category you imagine.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Gaming Insights</h3>
+                    <p>Discover patterns in your gaming habits, including your most-played genres and favorite developers.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Smart Recommendations</h3>
+                    <p>Get personalized game suggestions based on your gaming history and preferences.</p>
+                </div>
+            </div>
+        </div>
 
-        <h2> API Full Documentation </h2>
-        <p>
-            Full documentation of the Steamworks Web API can be found <a href="https://steamapi.xpaw.me/">here</a>.
-        </p>
-        <br>
+        <div class="team-section">
+            <h2><i class="fas fa-users"></i> Our Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <strong>Minh Chu</strong>
+                    <p class="role">Full-Stack Developer</p>
+                    <p class="description">Specializes in API integration and backend development</p>
+                </div>
+                <div class="team-card">
+                    <strong>Devin Perry</strong>
+                    <p class="role">Full-Stack Developer</p>
+                    <p class="description">Focuses on user interface and experience design</p>
+                </div>
+                <div class="team-card">
+                    <strong>Alice Sun</strong>
+                    <p class="role">Full-Stack Developer</p>
+                    <p class="description">Handles data analysis and recommendation systems</p>
+                </div>
+            </div>
+        </div>
 
-        <h1>User Guide</h1>
+        <div class="guide-section">
+            <h2><i class="fas fa-book"></i> Getting Started</h2>
+            <div class="guide-content">
+                <div class="guide-card">
+                    <h3><i class="fas fa-search"></i> Finding Your Steam ID</h3>
+                    <p>Enter either your 16-digit Steam ID or your vanity URL in the search bar. Your vanity URL can be found in your Steam profile URL after "steamcommunity.com/id/".</p>
+                </div>
+                
+                <div class="guide-card">
+                    <h3><i class="fas fa-list-ul"></i> Creating and Managing Lists</h3>
+                    <ul>
+                        <li>Select games using the 'Select' button and choose a meaningful title for your list</li>
+                        <li>View and manage your lists at the bottom of the page</li>
+                        <li>Share your curated game lists with friends</li>
+                    </ul>
+                </div>
 
-        <ul>
-            <li>
-                Input your Steam ID or vanity URL into the search bar, and press Enter or Search
-            </li>
-            <li>
-                If valid, your game library will show up. If not, make sure you are 
-                inputting either a 16-digit Steam ID or a valid vanity URL
-            </li>
-            <li>
-                To create a list, select games with the 'Select' button and provide a list title.
-            </li>
-            <li>
-                Your created lists can be seen at the bottom of the page, and you can 
-                remove games from your list or delete your list with the red trash can button.
-            </li>
-            <li>
-                You can view your favorite games, top genre, and get recommended a new game 
-                on the 'Recommendations' page.
-            </li>
-        </ul>
+                <div class="guide-card">
+                    <h3><i class="fas fa-compass"></i> Discovering New Games</h3>
+                    <ul>
+                        <li>Visit the 'Recommendations' page for personalized game suggestions</li>
+                        <li>Explore your gaming statistics and patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
+        <div class="contact-section">
+            <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
+            <p>Having issues or suggestions? We'd love to hear from you! Reach out to our team through our GitHub repository or send us an email at support@steamlists.com.</p>
+        </div>
     </div>
 
+    <footer class="footer">
+        <p>© 2024 Steam Lists. All rights reserved. <i class="fab fa-steam"></i></p>
+    </footer>
 </body>
 </html>

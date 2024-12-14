@@ -307,7 +307,7 @@ async function initializeFavoriteGames() {
         }
     } catch (error) {
         clearFavorites();
-        console.error('Initialization error:', error);
+        console.error('Error:', error);
         const errorMessage = document.createElement('div');
         errorMessage.className = 'error-message';
         errorMessage.textContent = error.message;
@@ -315,7 +315,7 @@ async function initializeFavoriteGames() {
     }
 }
 
-// Event listeners and interval checking remain the same
+// Event listeners and interval checking
 document.addEventListener('DOMContentLoaded', () => {
     initializeFavoriteGames();
 });
