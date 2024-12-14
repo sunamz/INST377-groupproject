@@ -14,16 +14,13 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
+// API routes remain the same...
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// API Endpoints
 app.get('/api/lists/:userId', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -43,7 +40,6 @@ app.post('/api/lists', async (req, res) => {
     try {
         const { user_steam_id, list_name, description, games } = req.body;
         
-        // Insert new list
         const { data: listData, error: listError } = await supabase
             .from('game_lists')
             .insert([{ user_steam_id, list_name, description }])
@@ -52,7 +48,6 @@ app.post('/api/lists', async (req, res) => {
 
         if (listError) throw listError;
 
-        // Insert games if provided
         if (games && games.length > 0) {
             const gamesWithListId = games.map(game => ({
                 list_id: listData.list_id,
@@ -75,7 +70,108 @@ app.post('/api/lists', async (req, res) => {
     }
 });
 
-// Start server
+
+// Delete game from list endpoint
+app.delete('/api/lists/:listId/games/:gameId', async (req, res) => {
+    try {
+        const { listId, gameId } = req.params;
+        const gameIdInt = parseInt(gameId, 10);
+        
+        console.log('Delete game request:', { listId, gameId: gameIdInt });
+
+        // Use a single delete operation with explicit conditions
+        const { data, error } = await supabase
+            .from('list_games')
+            .delete()
+            .eq('list_id', listId)
+            .eq('game_app_id', gameIdInt)
+            .select(); // This returns the deleted row
+
+        if (error) {
+            console.error('Supabase delete error:', error);
+            return res.status(500).json({
+                error: 'Database delete operation failed',
+                details: error.message
+            });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({
+                error: 'Game not found in list'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Game removed successfully',
+            deletedRecord: data[0]
+        });
+
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
+// Delete entire list endpoint
+app.delete('/api/lists/:listId', async (req, res) => {
+    try {
+        const { listId } = req.params;
+        
+        console.log('Delete list request:', { listId });
+
+        // First delete all games in the list
+        const { error: gamesDeleteError } = await supabase
+            .from('list_games')
+            .delete()
+            .eq('list_id', listId);
+
+        if (gamesDeleteError) {
+            console.error('Error deleting games:', gamesDeleteError);
+            return res.status(500).json({
+                error: 'Failed to delete games from list',
+                details: gamesDeleteError.message
+            });
+        }
+
+        // Then delete the list itself
+        const { data, error: listDeleteError } = await supabase
+            .from('game_lists')
+            .delete()
+            .eq('list_id', listId)
+            .select(); // This returns the deleted row
+
+        if (listDeleteError) {
+            console.error('Error deleting list:', listDeleteError);
+            return res.status(500).json({
+                error: 'Failed to delete list',
+                details: listDeleteError.message
+            });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({
+                error: 'List not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'List and all its games deleted successfully',
+            deletedList: data[0]
+        });
+
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

@@ -1,24 +1,42 @@
 const API_KEY = 'C64C097A0C347B224046BD0B009F6B16';
 let selectedGames = new Map();
 let currentSteamId = '';
-let currentGames = []; // Store games data
+let currentGames = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
 
 function showError(message) {
     const errorDiv = document.getElementById('error');
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';
     
-    // Hide error after 5 seconds
     setTimeout(() => {
         errorDiv.style.display = 'none';
     }, 5000);
 }
 
+function showSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.textContent = message;
+    document.body.appendChild(successDiv);
+    
+    setTimeout(() => {
+        successDiv.remove();
+    }, 3000);
+}
+
 async function parseSteamInput(input) {
-    // Remove whitespace
     input = input.trim();
     
-    // Handle full URLs
     if (input.includes('steamcommunity.com')) {
         const urlPattern = /(?:https?:\/\/)?steamcommunity\.com\/(?:profiles|id)\/([^\s/]+)/;
         const match = input.match(urlPattern);
@@ -27,12 +45,10 @@ async function parseSteamInput(input) {
         }
     }
 
-    // If it's a 17-digit number (Steam64 ID)
     if (/^\d{17}$/.test(input)) {
         return input;
     }
 
-    // If it's a custom URL name, resolve it
     try {
         const proxyUrl = 'https://api.allorigins.win/get?url=';
         const vanityUrl = `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${API_KEY}&vanityurl=${input}`;
@@ -51,15 +67,12 @@ async function parseSteamInput(input) {
     }
 }
 
-
-
 async function fetchUserGames() {
     const steamId = document.getElementById('steamId').value;
+    const gamesContainer = document.getElementById('gamesContainer');
     
     try {
-        // Clear previous lists when searching new user
-        document.getElementById('listsContainer').innerHTML = '';
-        selectedGames.clear();
+        gamesContainer.innerHTML = '<div class="loading">Loading your games...</div>';
         
         const resolvedSteamId = await parseSteamInput(steamId);
         currentSteamId = resolvedSteamId;
@@ -77,29 +90,15 @@ async function fetchUserGames() {
             fetchUserLists(resolvedSteamId);
         }
     } catch (error) {
+        gamesContainer.innerHTML = '';
         showError(error.message);
-    }
-}
-
-
-async function fetchUserLists(steamId) {
-    try {
-        const response = await fetch(`/api/lists/${steamId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch lists');
-        }
-        
-        const lists = await response.json();
-        displayLists(lists);
-    } catch (error) {
-        showError('Failed to load user lists: ' + error.message);
     }
 }
 
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
     container.innerHTML = '';
-
+    
     games.forEach(game => {
         const gameCard = document.createElement('div');
         gameCard.className = 'game-card';
@@ -107,14 +106,20 @@ function displayGames(games) {
         const imgUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
         
         gameCard.innerHTML = `
-            <img src="${imgUrl}" alt="${game.name}">
-            <span>${game.name}</span>
-            <div class="game-actions">
-                <button onclick="viewGameDetails(${game.appid})">View Details</button>
-                <button onclick="toggleGameSelection(${game.appid}, '${game.name}', '${imgUrl}')"
-                        id="btn-${game.appid}">
-                    Add to List
-                </button>
+            <img src="${imgUrl}" alt="${escapeHtml(game.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/184x69.png?text=No+Image'">
+            <div class="game-card-content">
+                <h3 class="game-card-title">${escapeHtml(game.name)}</h3>
+                <div class="game-actions">
+                    <button onclick="viewGameDetails(${game.appid})" class="view-details-btn">
+                        <i class="fas fa-info-circle"></i> Details
+                    </button>
+                    <button id="btn-${game.appid}" 
+                            onclick="toggleGameSelection(${game.appid})" 
+                            class="toggle-list-btn ${selectedGames.has(game.appid) ? 'selected' : ''}">
+                        <i class="fas ${selectedGames.has(game.appid) ? 'fa-check' : 'fa-plus'}"></i>
+                        ${selectedGames.has(game.appid) ? 'Selected' : 'Add to List'}
+                    </button>
+                </div>
             </div>
         `;
         
@@ -122,43 +127,24 @@ function displayGames(games) {
     });
 }
 
-function toggleGameSelection(appId, name, imageUrl) {
-    const btn = document.getElementById(`btn-${appId}`);
-    const gameInfo = { appid: appId, name: name, img_icon_url: imageUrl };
+function toggleGameSelection(appId) {
+    const game = currentGames.find(g => g.appid === appId);
+    if (!game) return;
 
+    const btn = document.getElementById(`btn-${appId}`);
+    
     if (selectedGames.has(appId)) {
         selectedGames.delete(appId);
-        btn.textContent = 'Add to List';
-        btn.style.backgroundColor = '#66c0f4';
+        btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
+        btn.classList.remove('selected');
     } else {
-        selectedGames.set(appId, gameInfo);
-        btn.textContent = 'Selected';
-        btn.style.backgroundColor = '#417a9b';
-    }
-}
-
-async function viewGameDetails(appId) {
-    try {
-        const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
-        
-        const response = await fetch(proxyUrl + encodeURIComponent(steamUrl));
-        const data = await response.json();
-        
-        if (data.contents) {
-            const gameDetails = JSON.parse(data.contents)[appId].data;
-            
-            document.getElementById('modalGameTitle').textContent = gameDetails.name;
-            document.getElementById('modalGameContent').innerHTML = `
-                <p>${gameDetails.short_description || 'No description available.'}</p>
-                <p>Release Date: ${gameDetails.release_date?.date || 'Unknown'}</p>
-                <p>Genres: ${gameDetails.genres?.map(g => g.description).join(', ') || 'None listed'}</p>
-            `;
-            
-            document.getElementById('gameModal').style.display = 'block';
-        }
-    } catch (error) {
-        showError('Failed to load game details');
+        selectedGames.set(appId, {
+            appid: appId,
+            name: game.name,
+            img_icon_url: game.img_icon_url
+        });
+        btn.innerHTML = '<i class="fas fa-check"></i> Selected';
+        btn.classList.add('selected');
     }
 }
 
@@ -168,6 +154,11 @@ async function createNewList() {
 
     if (!listName) {
         showError('Please enter a list name');
+        return;
+    }
+
+    if (selectedGames.size === 0) {
+        showError('Please select at least one game');
         return;
     }
 
@@ -185,24 +176,60 @@ async function createNewList() {
             })
         });
 
-        if (!response.ok) throw new Error('Failed to create list');
+        if (!response.ok) {
+            throw new Error('Failed to create list');
+        }
 
-        // Reset form and selections
         document.getElementById('listName').value = '';
         document.getElementById('listDescription').value = '';
         selectedGames.clear();
         
-        // Reset all "Add to List" buttons
-        const buttons = document.querySelectorAll('[id^="btn-"]');
+        const buttons = document.querySelectorAll('.toggle-list-btn');
         buttons.forEach(btn => {
-            btn.textContent = 'Add to List';
-            btn.style.backgroundColor = '#66c0f4';
+            btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
+            btn.classList.remove('selected');
         });
         
-        // Refresh lists
+        showSuccess('List created successfully!');
         fetchUserLists(currentSteamId);
     } catch (error) {
         showError(error.message);
+    }
+}
+
+async function viewGameDetails(appId) {
+    const modal = document.getElementById('gameModal');
+    const modalContent = document.getElementById('modalGameContent');
+    
+    try {
+        modal.style.display = 'block';
+        modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
+        
+        const proxyUrl = 'https://api.allorigins.win/get?url=';
+        const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
+        
+        const response = await fetch(proxyUrl + encodeURIComponent(steamUrl));
+        const data = await response.json();
+        
+        if (data.contents) {
+            const gameDetails = JSON.parse(data.contents)[appId].data;
+            
+            document.getElementById('modalGameTitle').textContent = gameDetails.name;
+            modalContent.innerHTML = `
+                <div class="modal-game-details">
+                    <img src="${gameDetails.header_image}" alt="${gameDetails.name}" class="modal-game-image">
+                    <p class="game-description">${gameDetails.short_description || 'No description available.'}</p>
+                    <div class="game-meta">
+                        <p><strong>Release Date:</strong> ${gameDetails.release_date?.date || 'Unknown'}</p>
+                        <p><strong>Genres:</strong> ${gameDetails.genres?.map(g => g.description).join(', ') || 'None listed'}</p>
+                        ${gameDetails.metacritic ? `<p><strong>Metacritic:</strong> ${gameDetails.metacritic.score}</p>` : ''}
+                        ${gameDetails.price_overview ? `<p><strong>Price:</strong> ${gameDetails.price_overview.final_formatted}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        modalContent.innerHTML = '<div class="error">Failed to load game details</div>';
     }
 }
 
@@ -210,6 +237,77 @@ function closeGameModal() {
     document.getElementById('gameModal').style.display = 'none';
 }
 
+window.onclick = (event) => {
+    const modal = document.getElementById('gameModal');
+    if (event.target === modal) {
+        closeGameModal();
+    }
+};
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeGameModal();
+    }
+});
+
+async function deleteList(listId) {
+    if (!confirm('Are you sure you want to delete this list?')) return;
+
+    try {
+        const response = await fetch(`/api/lists/${listId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete list');
+        }
+
+        showSuccess('List deleted successfully!');
+        fetchUserLists(currentSteamId);
+    } catch (error) {
+        showError('Failed to delete list: ' + error.message);
+    }
+}
+
+async function deleteGameFromList(listId, gameAppId) {
+    if (!confirm('Are you sure you want to remove this game from the list?')) return;
+
+    try {
+        const response = await fetch(`/api/lists/${listId}/games/${gameAppId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to remove game from list');
+        }
+
+        showSuccess('Game removed from list successfully!');
+        fetchUserLists(currentSteamId);
+    } catch (error) {
+        showError('Failed to remove game: ' + error.message);
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+async function fetchUserLists(steamId) {
+    try {
+        const response = await fetch(`/api/lists/${steamId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch lists');
+        }
+        
+        const lists = await response.json();
+        displayLists(lists);
+    } catch (error) {
+        showError('Failed to load user lists: ' + error.message);
+    }
+}
 
 function displayLists(lists) {
     const container = document.getElementById('listsContainer');
@@ -219,84 +317,46 @@ function displayLists(lists) {
         const listElement = document.createElement('div');
         listElement.className = 'list-card';
         
-        // Create header section
-        const headerSection = `
+        listElement.innerHTML = `
             <div class="list-header">
-                <h3>${list.list_name}</h3>
-                <p class="list-description">${list.description || ''}</p>
-                <div>Games: ${list.list_games ? list.list_games.length : 0}</div>
-            </div>
-        `;
-
-        // Create games section
-        const gamesSection = `
-            <div class="list-games" id="list-${list.list_id}">
-                ${list.list_games?.map(game => `
-                    <div class="list-game-card">
-                        <div class="game-basic-info">
-                            <img src="https://media.steampowered.com/steamcommunity/public/images/apps/${game.game_app_id}/${game.game_image_url}" alt="${game.game_name}">
-                            <span>${game.game_name}</span>
-                        </div>
-                        <div class="game-actions">
-                            <button onclick="viewListGameDetails(event, ${game.game_app_id})">View Details</button>
-                        </div>
-                        <div class="game-details" id="details-${game.game_app_id}"></div>
+                <div class="list-title-section">
+                    <h3>${escapeHtml(list.list_name)}</h3>
+                    <p class="list-description">${escapeHtml(list.description || '')}</p>
+                    <div class="list-meta">
+                        <i class="fas fa-gamepad"></i> ${list.list_games ? list.list_games.length : 0} games
                     </div>
-                `).join('') || 'No games in this list'}
+                </div>
+                <button class="delete-button" onclick="deleteList('${list.list_id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="list-games">
+                ${renderListGames(list.list_games)}
             </div>
         `;
-
-        listElement.innerHTML = headerSection + gamesSection;
-        
-        // Add click handler to toggle list expansion
-        const headerDiv = listElement.querySelector('.list-header');
-        headerDiv.onclick = () => toggleListGames(list.list_id);
         
         container.appendChild(listElement);
     });
 }
 
-async function viewListGameDetails(event, appId) {
-    event.stopPropagation(); // Prevent list toggle when clicking the button
-    
-    const detailsDiv = document.getElementById(`details-${appId}`);
-    
-    // If details are already loaded, just toggle visibility
-    if (detailsDiv.innerHTML !== '') {
-        detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
-        return;
+function renderListGames(games) {
+    if (!games || games.length === 0) {
+        return '<div class="no-games">No games in this list</div>';
     }
-
-    try {
-        const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
-        
-        detailsDiv.innerHTML = '<div class="loading">Loading details...</div>';
-        
-        const response = await fetch(proxyUrl + encodeURIComponent(steamUrl));
-        const data = await response.json();
-        
-        if (data.contents) {
-            const gameDetails = JSON.parse(data.contents)[appId].data;
-            
-            detailsDiv.innerHTML = `
-                <div class="game-details-content">
-                    <p class="game-description">${gameDetails.short_description || 'No description available.'}</p>
-                    <div class="game-meta">
-                        <p><strong>Release Date:</strong> ${gameDetails.release_date?.date || 'Unknown'}</p>
-                        <p><strong>Genres:</strong> ${gameDetails.genres?.map(g => g.description).join(', ') || 'None listed'}</p>
-                        ${gameDetails.metacritic ? `<p><strong>Metacritic:</strong> ${gameDetails.metacritic.score}</p>` : ''}
-                    </div>
-                </div>
-            `;
-        }
-    } catch (error) {
-        detailsDiv.innerHTML = '<div class="error">Failed to load game details</div>';
-    }
-}
-
-function toggleListGames(listId) {
-    const gamesDiv = document.getElementById(`list-${listId}`);
-    const currentDisplay = gamesDiv.style.display;
-    gamesDiv.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    
+    return games.map(game => `
+        <div class="list-game-card">
+            <div class="game-basic-info">
+                <span>${escapeHtml(game.game_name)}</span>
+            </div>
+            <div class="game-actions">
+                <button onclick="viewGameDetails(${game.game_app_id})" class="view-details-btn">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+                <button onclick="deleteGameFromList('${game.list_id}', ${game.game_app_id})" class="delete-button">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
 }

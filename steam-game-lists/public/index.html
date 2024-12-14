@@ -5,40 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steam Game Lists</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Steam Game Lists</h1>
-    
-    <div class="search-section">
-        <input type="text" id="steamId" placeholder="Enter Steam ID">
-        <button onclick="fetchUserGames()">Search Games</button>
-        <div id="error" class="error"></div>
-    </div>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-steam"></i>
+            <span>Steam Lists</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+            <a href="/docs"><i class="fas fa-book"></i> Documentation</a>
+            <a href="/recommendations"><i class="fas fa-star"></i> Recommendations</a>
+        </div>
+    </nav>
 
-    <div class="container">
-        <div class="game-section">
-            <h2>Your Games</h2>
-            <div id="gamesContainer"></div>
+    <main class="main-content">
+        <div class="search-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="steamId" placeholder="Enter Steam ID or Profile URL">
+                <button onclick="fetchUserGames()" class="search-button">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <div id="error" class="error"></div>
         </div>
 
-        <div id="gameModal" class="modal" style="display: none;">
+        <div class="container">
+            <div class="game-section">
+                <div class="section-header">
+                    <i class="fas fa-gamepad"></i>
+                    <h2>Your Games</h2>
+                </div>
+                <div id="gamesContainer" class="games-grid"></div>
+            </div>
+
+            <div class="lists-section">
+                <div class="section-header">
+                    <i class="fas fa-list"></i>
+                    <h2>Your Lists</h2>
+                </div>
+                <div class="new-list-form">
+                    <input type="text" id="listName" placeholder="New List Name">
+                    <textarea id="listDescription" placeholder="List Description (optional)"></textarea>
+                    <button onclick="createNewList()" class="create-list-button">
+                        <i class="fas fa-plus"></i> Create New List
+                    </button>
+                </div>
+                <div id="listsContainer"></div>
+            </div>
+        </div>
+
+        <div id="gameModal" class="modal">
             <div class="modal-content">
-                <span class="close-button" onclick="closeGameModal()">&times;</span>
+                <span class="close-button" onclick="closeGameModal()"><i class="fas fa-times"></i></span>
                 <h2 id="modalGameTitle"></h2>
                 <div id="modalGameContent"></div>
             </div>
         </div>
+    </main>
 
-        <div class="lists-section">
-            <h2>Your Lists</h2>
-            <div>
-                <input type="text" id="listName" placeholder="New List Name">
-                <textarea id="listDescription" placeholder="List Description (optional)"></textarea>
-                <button onclick="createNewList()">Create New List</button>
-            </div>
-            <div id="listsContainer"></div>
-        </div>
-    </div>
+    <footer class="footer">
+        <p>Created with <i class="fas fa-heart"></i> for Steam gamers</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
