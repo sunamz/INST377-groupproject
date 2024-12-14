@@ -1,124 +1,257 @@
+/* Reset and base styles - matching main styles.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #1b2838;
-    color: #c5c6c7;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    text-align: center;
-    color: #66c0f4;
-    padding: 20px 0;
-}
-
-nav {
-    background-color: #2a475e;
-    padding: 10px 0;
-}
-
-nav ul {
+    color: #c7d5e0;
+    line-height: 1.6;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    flex-direction: column;
 }
 
-nav ul li {
-    margin: 0 15px;
+/* Navigation Bar - matching main styles.css */
+.navbar {
+    background-color: #171a21;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-nav ul a {
-    text-decoration: none;
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
     color: #66c0f4;
-    font-size: 1.2rem;
-    transition: color 0.3s;
 }
 
-nav ul a:hover {
+.nav-brand i {
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: #c7d5e0;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: #66c0f4;
+    background-color: #2a475e;
+}
+
+
+.swiper-slide .game-card {
+    width: 100%;
+    max-width: 250px;
+    background-color: #1b2838;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.swiper-slide .game-card:hover {
+    transform: translateY(-5px);
+}
+
+.swiper-slide .game-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.swiper-slide .game-card h3 {
     color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.swiper-slide .game-card .playtime {
+    color: #66c0f4;
+    font-size: 0.9rem;
+}
+
+/* Updated Recommendation Section */
+.recommendation-section {
+    background-color: #2a475e;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-game {
+    margin-top: 1rem;
+}
+
+.recommendation-card {
+    background-color: #1b2838;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.recommendation-image {
+    max-width: 460px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 0 auto 1rem auto;
+    display: block;
+}
+
+
+/* Recommendation Section */
+.recommendation-section {
+    background-color: #2a475e;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-section h2 {
+    color: #66c0f4;
+    margin-bottom: 1rem;
+}
+
+.recommendation-game {
+    margin-top: 1rem;
+}
+
+.recommendation-card {
+    background-color: #1b2838;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.recommendation-image {
+    width: 100%;
+    max-width: 460px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.recommendation-details h3 {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.view-store-btn {
+    display: inline-block;
+    background-color: #66c0f4;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.view-store-btn:hover {
+    background-color: #1999ff;
+}
+/* Error Messages */
+.error {
+    background-color: rgba(200, 55, 55, 0.2);
+    border: 1px solid #c83737;
+    color: #ff6347;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header i {
+    font-size: 1.5rem;
+    color: #66c0f4;
+}
+
+.section-header h1,
+.section-header h2 {
+    margin: 0;
+    color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .swiper-container {
+        padding: 1rem;
+    }
+
+    .game-card {
+        max-width: 200px;
+    }
+
+    .recommendation-section {
+        padding: 1rem;
+    }
 }
 
 .swiper-container {
     width: 100%;
-    height: auto;
-    background-color: #1b2838;
-    padding: 20px 0;
-    border-radius: 10px;
+    background-color: #2a475e;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
 }
 
 .swiper-pagination-bullet {
-    width: 16px; 
-    height: 16px; 
+    width: 12px;
+    height: 12px;
     background-color: #66c0f4;
     opacity: 0.7;
 }
 
 .swiper-pagination-bullet-active {
     background-color: #ffffff;
+    opacity: 1;
 }
 
 .swiper-button-next, 
 .swiper-button-prev {
-    color: #66c0f4; 
-}
-
-.game-card {
-    background-color: #2a475e;
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-    width: 120px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    text-decoration: none; 
-    color: inherit; 
-
-}
-
-.game-card:hover {
-    transform: translateY(-10px);
-}
-
-.game-card img.game-image {
-    width: 80px; 
-    height: 80px; 
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.game-card h3 {
     color: #66c0f4;
-    font-size: 0.9rem;
-    margin-bottom: 8px; 
-}
-
-.game-card p.playtime {
-    color: #c5c6c7;
-    font-size: 0.8rem;
-}
-
-.recommendation-section {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.recommendation-section h2 {
-    color: #66c0f4;
-}
-
-.recommendation-game img {
-    width: 150px;
-    border-radius: 8px;
-}
-
-.recommendation-game a {
-    color: #66c0f4;
-    font-size: 1rem;
-    text-decoration: none;
-}
-
-.recommendation-game a:hover {
-    color: #ffffff;
 }

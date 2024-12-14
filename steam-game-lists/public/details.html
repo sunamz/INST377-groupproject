@@ -3,36 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favorites</title>
+    <title>Steam Lists - Favorites</title>
+    <!-- CSS imports -->
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <link rel="stylesheet" href="favorites.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-
     <!-- Navigation Bar -->
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="readme.html">ReadMe</a></li>
-        </ul>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-steam"></i>
+            <span>Steam Lists</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="readme.html"><i class="fas fa-info-circle"></i> About</a>
+            <a href="details.html" class="active"><i class="fas fa-star"></i> Favorites</a>
+        </div>
     </nav>
 
-    <h1>Favorite Games</h1>
+    <main class="main-content">
+        <div id="noSteamId" class="error hidden">
+            Please search for a Steam ID first on the home page.
+        </div>
 
-    <div class="swiper-container">
-        <div class="swiper-wrapper" id="carousel"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
-    </div>
+        <div id="favoritesContent" class="container">
+            <div class="section-header">
+                <i class="fas fa-gamepad"></i>
+                <h2>Your Favorite Games</h2>
+            </div>
 
-    <div class="recommendation-section">
-        <h2>Your Favorite Genre: <span id="favoriteGenre">Loading...</span></h2>
-        <h2>Recommended Game</h2>
-        <div id="recommendedGame" class="recommendation-game">Loading recommendation...</div>
-    </div>
+            <!-- Swiper Container -->
+            <div class="swiper-container">
+                <div class="swiper-wrapper" id="carousel"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
+            </div>
 
+            <!-- Recommendation Section -->
+            <div class="recommendation-section">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Your Favorite Genre: <span id="favoriteGenre">Loading...</span></h2>
+                </div>
+                
+                <div class="section-header">
+                    <i class="fas fa-gift"></i>
+                    <h2>Recommended For You</h2>
+                </div>
+                <div id="recommendedGame" class="recommendation-game">Loading recommendation...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Created with <i class="fas fa-heart"></i> for Steam gamers</p>
+    </footer>
+
+    <!-- JavaScript imports -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="favorites.js"></script>
 </body>
 </html>

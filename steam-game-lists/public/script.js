@@ -4,6 +4,7 @@ let currentSteamId = '';
 let currentGames = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Highlight active nav link
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-links a');
     navLinks.forEach(link => {
@@ -11,6 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
             link.classList.add('active');
         }
     });
+
+    // Check for stored Steam ID
+    const storedSteamId = localStorage.getItem('currentSteamId');
+    if (storedSteamId) {
+        const steamIdInput = document.getElementById('steamId');
+        if (steamIdInput) {
+            steamIdInput.value = storedSteamId;
+            fetchUserGames(); // Auto-load games if ID exists
+        }
+    }
 });
 
 function showError(message) {
@@ -67,15 +78,31 @@ async function parseSteamInput(input) {
     }
 }
 
+// In script.js, update the fetchUserGames function
+
 async function fetchUserGames() {
     const steamId = document.getElementById('steamId').value;
     const gamesContainer = document.getElementById('gamesContainer');
+    
+    // Clear previous data if the Steam ID is empty
+    if (!steamId.trim()) {
+        clearUserData();
+        showError('Please enter a Steam ID');
+        return;
+    }
     
     try {
         gamesContainer.innerHTML = '<div class="loading">Loading your games...</div>';
         
         const resolvedSteamId = await parseSteamInput(steamId);
+
+        // Clear previous data if the Steam ID has changed
+        if (currentSteamId && currentSteamId !== resolvedSteamId) {
+            clearUserData();
+        }
+        
         currentSteamId = resolvedSteamId;
+        localStorage.setItem('currentSteamId', resolvedSteamId);
         
         const proxyUrl = 'https://api.allorigins.win/get?url=';
         const steamUrl = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${API_KEY}&steamid=${resolvedSteamId}&include_appinfo=1&format=json`;
@@ -86,10 +113,36 @@ async function fetchUserGames() {
         if (data.contents) {
             const gamesData = JSON.parse(data.contents);
             currentGames = gamesData.response.games || [];
+            
+            // Store top games as favorites
+            const topGames = [...currentGames]
+                .sort((a, b) => b.playtime_forever - a.playtime_forever)
+                .slice(0, 10);
+            
+            localStorage.setItem('favoriteGames', JSON.stringify(topGames));
+                
+            try {
+                const favoriteResponse = await fetch('/api/favorites/' + resolvedSteamId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ games: topGames })
+                });
+
+                if (!favoriteResponse.ok) {
+                    throw new Error('Failed to store favorites');
+                }
+            } catch (error) {
+                console.error('Error storing favorites:', error);
+                showError('Failed to update favorites, but games loaded successfully');
+            }
+            
             displayGames(currentGames);
             fetchUserLists(resolvedSteamId);
         }
     } catch (error) {
+        clearUserData();
         gamesContainer.innerHTML = '';
         showError(error.message);
     }
@@ -109,6 +162,7 @@ function displayGames(games) {
             <img src="${imgUrl}" alt="${escapeHtml(game.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/184x69.png?text=No+Image'">
             <div class="game-card-content">
                 <h3 class="game-card-title">${escapeHtml(game.name)}</h3>
+                <p class="playtime">${Math.round(game.playtime_forever / 60)} hours played</p>
                 <div class="game-actions">
                     <button onclick="viewGameDetails(${game.appid})" class="view-details-btn">
                         <i class="fas fa-info-circle"></i> Details
@@ -180,6 +234,7 @@ async function createNewList() {
             throw new Error('Failed to create list');
         }
 
+        // Clear form and selections
         document.getElementById('listName').value = '';
         document.getElementById('listDescription').value = '';
         selectedGames.clear();
@@ -313,6 +368,11 @@ function displayLists(lists) {
     const container = document.getElementById('listsContainer');
     container.innerHTML = '';
 
+    if (lists.length === 0) {
+        container.innerHTML = '<div class="no-lists">No lists created yet</div>';
+        return;
+    }
+
     lists.forEach(list => {
         const listElement = document.createElement('div');
         listElement.className = 'list-card';
@@ -360,3 +420,38 @@ function renderListGames(games) {
         </div>
     `).join('');
 }
+
+function clearUserData() {
+    // Clear stored Steam ID
+    localStorage.removeItem('currentSteamId');
+    localStorage.removeItem('favoriteGames');
+    
+    // Clear UI elements
+    const gamesContainer = document.getElementById('gamesContainer');
+    const listsContainer = document.getElementById('listsContainer');
+    if (gamesContainer) gamesContainer.innerHTML = '';
+    if (listsContainer) listsContainer.innerHTML = '';
+    
+    // Reset selected games
+    selectedGames.clear();
+    currentGames = [];
+    currentSteamId = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const steamIdInput = document.getElementById('steamId');
+    if (steamIdInput) {
+        steamIdInput.addEventListener('input', () => {
+            if (!steamIdInput.value.trim()) {
+                clearUserData();
+            }
+        });
+    }
+
+    // Check for stored Steam ID
+    const storedSteamId = localStorage.getItem('currentSteamId');
+    if (storedSteamId && steamIdInput) {
+        steamIdInput.value = storedSteamId;
+        fetchUserGames();
+    }
+});
