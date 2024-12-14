@@ -24,7 +24,7 @@ We decided to use the [Steamworks Web API](https://steamapi.xpaw.me/) for our pr
 - `app.get('/api/lists/:userId')` Populates the database with the user's game library
 - `app.post('/api/lists)` Creates a new list with the games that the user selected
 ### Known Bugs and Roadmap
-- No known bugs during delopment.
+- No known bugs during development.
 - Future development of the app could include more analytics on the user's profile, such as breakdowns of time spent playing or games owned across popular genres, or filtering options for game reccomendations (such as a price range limitation).
 ### Libraries Used
 - Node.js
