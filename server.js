@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API routes remain the same...
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -85,7 +85,7 @@ app.delete('/api/lists/:listId/games/:gameId', async (req, res) => {
             .delete()
             .eq('list_id', listId)
             .eq('game_app_id', gameIdInt)
-            .select(); // This returns the deleted row
+            .select(); 
 
         if (error) {
             console.error('Supabase delete error:', error);
