@@ -6,23 +6,26 @@
     <title>Steam Game Lists</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-brand">
+        <div class="nav-brand animate__animated animate__fadeIn">
             <i class="fab fa-steam"></i>
             <span>Steam Lists</span>
         </div>
-        <div class="nav-links">
+        <div class="nav-links animate__animated animate__fadeIn">
             <a href="/" class="active"><i class="fas fa-home"></i> Home</a>
             <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
-            <!-- <a href="/docs"><i class="fas fa-book"></i> Documentation</a> not needed -->
             <a href="details.html"><i class="fas fa-star"></i> Recommendations</a>
         </div>
     </nav>
 
     <main class="main-content">
-        <div class="search-section">
+        <div class="search-section animate__animated animate__fadeInDown">
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="steamId" placeholder="Enter Steam ID or Profile URL">
@@ -34,7 +37,7 @@
         </div>
 
         <div class="container">
-            <div class="game-section">
+            <div class="game-section animate__animated animate__fadeIn">
                 <div class="section-header">
                     <i class="fas fa-gamepad"></i>
                     <h2>Your Games</h2>
@@ -42,12 +45,12 @@
                 <div id="gamesContainer" class="games-grid"></div>
             </div>
 
-            <div class="lists-section">
+            <div class="lists-section animate__animated animate__fadeIn">
                 <div class="section-header">
                     <i class="fas fa-list"></i>
                     <h2>Your Lists</h2>
                 </div>
-                <div class="new-list-form">
+                <div class="new-list-form animate__animated animate__fadeInUp">
                     <input type="text" id="listName" placeholder="New List Name">
                     <textarea id="listDescription" placeholder="List Description (optional)"></textarea>
                     <button onclick="createNewList()" class="create-list-button">
@@ -59,7 +62,7 @@
         </div>
 
         <div id="gameModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content animate__animated animate__zoomIn">
                 <span class="close-button" onclick="closeGameModal()"><i class="fas fa-times"></i></span>
                 <h2 id="modalGameTitle"></h2>
                 <div id="modalGameContent"></div>
@@ -67,7 +70,7 @@
         </div>
     </main>
 
-    <footer class="footer">
+    <footer class="footer animate__animated animate__fadeIn">
         <p>Created with <i class="fas fa-heart"></i> for Steam gamers</p>
     </footer>
 

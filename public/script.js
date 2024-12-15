@@ -4,6 +4,9 @@ let currentSteamId = '';
 let currentGames = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize tooltips
+    tippy('[data-tippy-content]');
+
     // Highlight active nav link
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-links a');
@@ -22,6 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchUserGames(); // Auto-load games if ID exists
         }
     }
+
+    // Add tooltip to search input
+    const steamIdInput = document.getElementById('steamId');
+    if (steamIdInput) {
+        steamIdInput.setAttribute('data-tippy-content', 'Enter your Steam ID or profile URL');
+        tippy(steamIdInput);
+        
+        steamIdInput.addEventListener('input', () => {
+            if (!steamIdInput.value.trim()) {
+                clearUserData();
+            }
+        });
+    }
 });
 
 function showError(message) {
@@ -34,7 +50,6 @@ function showError(message) {
         errorDiv.style.display = 'none';
     }, 5000);
 }
-
 
 function showSuccess(message) {
     const successDiv = document.createElement('div');
@@ -86,7 +101,6 @@ async function fetchUserGames() {
     const steamId = document.getElementById('steamId').value;
     const gamesContainer = document.getElementById('gamesContainer');
     
-    // Clear previous data if the Steam ID is empty
     if (!steamId.trim()) {
         clearUserData();
         showError('Please enter a Steam ID');
@@ -94,11 +108,11 @@ async function fetchUserGames() {
     }
     
     try {
-        gamesContainer.innerHTML = '<div class="loading">Loading your games...</div>';
+        gamesContainer.innerHTML = '<div class="loading" data-tippy-content="Fetching your games...">Loading your games...</div>';
+        tippy('[data-tippy-content]');
         
         const resolvedSteamId = await parseSteamInput(steamId);
 
-        // Clear previous data if the Steam ID has changed
         if (currentSteamId && currentSteamId !== resolvedSteamId) {
             clearUserData();
         }
@@ -116,7 +130,6 @@ async function fetchUserGames() {
             const gamesData = JSON.parse(data.contents);
             currentGames = gamesData.response.games || [];
             
-            // Store top games as favorites
             const topGames = [...currentGames]
                 .sort((a, b) => b.playtime_forever - a.playtime_forever)
                 .slice(0, 10);
@@ -143,19 +156,27 @@ function displayGames(games) {
         gameCard.style.animationDelay = `${index * 0.1}s`;
         
         const imgUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
+        const playtime = Math.round(game.playtime_forever / 60);
         
         gameCard.innerHTML = `
-            <img src="${imgUrl}" alt="${escapeHtml(game.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/184x69.png?text=No+Image'">
+            <img src="${imgUrl}" 
+                 alt="${escapeHtml(game.name)}" 
+                 loading="lazy" 
+                 data-tippy-content="Click for details"
+                 onerror="this.src='https://via.placeholder.com/184x69.png?text=No+Image'">
             <div class="game-card-content">
-                <h3 class="game-card-title">${escapeHtml(game.name)}</h3>
-                <p class="playtime">${Math.round(game.playtime_forever / 60)} hours played</p>
+                <h3 class="game-card-title" data-tippy-content="${escapeHtml(game.name)}">${escapeHtml(game.name)}</h3>
+                <p class="playtime" data-tippy-content="Total time played">${playtime} hours played</p>
                 <div class="game-actions">
-                    <button onclick="viewGameDetails(${game.appid})" class="view-details-btn animate__animated animate__fadeIn">
+                    <button onclick="viewGameDetails(${game.appid})" 
+                            class="view-details-btn animate__animated animate__fadeIn"
+                            data-tippy-content="View game details and information">
                         <i class="fas fa-info-circle"></i> Details
                     </button>
                     <button id="btn-${game.appid}" 
                             onclick="toggleGameSelection(${game.appid})" 
-                            class="toggle-list-btn ${selectedGames.has(game.appid) ? 'selected' : ''} animate__animated animate__fadeIn">
+                            class="toggle-list-btn ${selectedGames.has(game.appid) ? 'selected' : ''} animate__animated animate__fadeIn"
+                            data-tippy-content="${selectedGames.has(game.appid) ? 'Remove from selection' : 'Add to your list'}">
                         <i class="fas ${selectedGames.has(game.appid) ? 'fa-check' : 'fa-plus'}"></i>
                         ${selectedGames.has(game.appid) ? 'Selected' : 'Add to List'}
                     </button>
@@ -165,6 +186,8 @@ function displayGames(games) {
         
         container.appendChild(gameCard);
     });
+    
+    tippy('[data-tippy-content]');
 }
 
 function toggleGameSelection(appId) {
@@ -177,6 +200,7 @@ function toggleGameSelection(appId) {
         selectedGames.delete(appId);
         btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
         btn.classList.remove('selected');
+        btn.setAttribute('data-tippy-content', 'Add to your list');
     } else {
         selectedGames.set(appId, {
             appid: appId,
@@ -185,14 +209,17 @@ function toggleGameSelection(appId) {
         });
         btn.innerHTML = '<i class="fas fa-check"></i> Selected';
         btn.classList.add('selected');
+        btn.setAttribute('data-tippy-content', 'Remove from selection');
     }
+    
+    tippy(btn);
 }
 
 async function createNewList() {
-    const listName = document.getElementById('listName').value;
-    const description = document.getElementById('listDescription').value;
+    const listName = document.getElementById('listName');
+    const description = document.getElementById('listDescription');
 
-    if (!listName) {
+    if (!listName.value) {
         showError('Please enter a list name');
         return;
     }
@@ -210,8 +237,8 @@ async function createNewList() {
             },
             body: JSON.stringify({
                 user_steam_id: currentSteamId,
-                list_name: listName,
-                description: description,
+                list_name: listName.value,
+                description: description.value,
                 games: Array.from(selectedGames.values())
             })
         });
@@ -220,15 +247,16 @@ async function createNewList() {
             throw new Error('Failed to create list');
         }
 
-        // Clear form and selections
-        document.getElementById('listName').value = '';
-        document.getElementById('listDescription').value = '';
+        listName.value = '';
+        description.value = '';
         selectedGames.clear();
         
         const buttons = document.querySelectorAll('.toggle-list-btn');
         buttons.forEach(btn => {
             btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
             btn.classList.remove('selected');
+            btn.setAttribute('data-tippy-content', 'Add to your list');
+            tippy(btn);
         });
         
         showSuccess('List created successfully!');
@@ -258,7 +286,10 @@ async function viewGameDetails(appId) {
             document.getElementById('modalGameTitle').textContent = gameDetails.name;
             modalContent.innerHTML = `
                 <div class="modal-game-details">
-                    <img src="${gameDetails.header_image}" alt="${gameDetails.name}" class="modal-game-image">
+                    <img src="${gameDetails.header_image}" 
+                         alt="${gameDetails.name}" 
+                         class="modal-game-image"
+                         data-tippy-content="Game header image">
                     <p class="game-description">${gameDetails.short_description || 'No description available.'}</p>
                     <div class="game-meta">
                         <p><strong>Release Date:</strong> ${gameDetails.release_date?.date || 'Unknown'}</p>
@@ -268,6 +299,7 @@ async function viewGameDetails(appId) {
                     </div>
                 </div>
             `;
+            tippy('[data-tippy-content]');
         }
     } catch (error) {
         modalContent.innerHTML = '<div class="error">Failed to load game details</div>';
@@ -367,13 +399,16 @@ function displayLists(lists) {
         listElement.innerHTML = `
             <div class="list-header">
                 <div class="list-title-section">
-                    <h3>${escapeHtml(list.list_name)}</h3>
-                    <p class="list-description">${escapeHtml(list.description || '')}</p>
+                    <h3 data-tippy-content="List name">${escapeHtml(list.list_name)}</h3>
+                    <p class="list-description" data-tippy-content="List description">${escapeHtml(list.description || '')}</p>
                     <div class="list-meta">
-                        <i class="fas fa-gamepad"></i> ${list.list_games ? list.list_games.length : 0} games
+                        <i class="fas fa-gamepad"></i> 
+                        <span data-tippy-content="Number of games in list">${list.list_games ? list.list_games.length : 0} games</span>
                     </div>
                 </div>
-                <button class="delete-button animate__animated animate__fadeIn" onclick="deleteList('${list.list_id}')">
+                <button class="delete-button animate__animated animate__fadeIn" 
+                        onclick="deleteList('${list.list_id}')"
+                        data-tippy-content="Delete this list">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -384,23 +419,29 @@ function displayLists(lists) {
         
         container.appendChild(listElement);
     });
+    
+    tippy('[data-tippy-content]');
 }
 
 function renderListGames(games) {
     if (!games || games.length === 0) {
-        return '<div class="no-games">No games in this list</div>';
+        return '<div class="no-games" data-tippy-content="Add games to this list">No games in this list</div>';
     }
     
     return games.map(game => `
         <div class="list-game-card">
             <div class="game-basic-info">
-                <span>${escapeHtml(game.game_name)}</span>
+                <span data-tippy-content="Game name">${escapeHtml(game.game_name)}</span>
             </div>
             <div class="game-actions">
-                <button onclick="viewGameDetails(${game.game_app_id})" class="view-details-btn">
+                <button onclick="viewGameDetails(${game.game_app_id})" 
+                        class="view-details-btn"
+                        data-tippy-content="View game details">
                     <i class="fas fa-info-circle"></i> Details
                 </button>
-                <button onclick="deleteGameFromList('${game.list_id}', ${game.game_app_id})" class="delete-button">
+                <button onclick="deleteGameFromList('${game.list_id}', ${game.game_app_id})" 
+                        class="delete-button"
+                        data-tippy-content="Remove game from list">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -425,20 +466,29 @@ function clearUserData() {
     currentSteamId = '';
 }
 
+// Add tooltips to static elements
 document.addEventListener('DOMContentLoaded', () => {
-    const steamIdInput = document.getElementById('steamId');
-    if (steamIdInput) {
-        steamIdInput.addEventListener('input', () => {
-            if (!steamIdInput.value.trim()) {
-                clearUserData();
-            }
-        });
+    // Add tooltips to form elements
+    const listNameInput = document.getElementById('listName');
+    const listDescInput = document.getElementById('listDescription');
+    const createListBtn = document.querySelector('.create-list-button');
+    
+    if (listNameInput) {
+        listNameInput.setAttribute('data-tippy-content', 'Enter a name for your new list');
+        tippy(listNameInput);
     }
-
-    // Check for stored Steam ID
-    const storedSteamId = localStorage.getItem('currentSteamId');
-    if (storedSteamId && steamIdInput) {
-        steamIdInput.value = storedSteamId;
-        fetchUserGames();
+    
+    if (listDescInput) {
+        listDescInput.setAttribute('data-tippy-content', 'Add an optional description for your list');
+        tippy(listDescInput);
     }
+    
+    if (createListBtn) {
+        createListBtn.setAttribute('data-tippy-content', 'Create a new list with selected games');
+        tippy(createListBtn);
+    }
+    
+    // Initialize all tooltips
+    tippy('[data-tippy-content]');
 });
+            
