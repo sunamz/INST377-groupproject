@@ -41,8 +41,6 @@ We decided to use the [Steamworks Web API](https://steamapi.xpaw.me/) for our pr
 
 # Developer Manual
 
-# Steam Lists - Installation and Setup
-
 ## Prerequisites
 
 - **Node.js** (v14 or higher)
@@ -109,17 +107,8 @@ Deletes a specific game list.
 **DELETE** `/api/lists/:listId/games/:gameId`
 Removes a specific game from a list.
 
-### API
-- `app.get('/')` Sends all static files to the website
-- `app.get('/api/lists/:userId')` Populates the database with the user's game library
-- `app.post('/api/lists)` Creates a new list with the games that the user selected
+
 ### Known Bugs and Roadmap
 - No known bugs during development.
 - Future development of the app could include more analytics on the user's profile, such as breakdowns of time spent playing or games owned across popular genres, or filtering options for game reccomendations (such as a price range limitation).
-### Libraries Used
-- Node.js
-- Supabase
-- Picture Slider
-- Font Awesome
-- Animate
 
