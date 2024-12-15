@@ -31,4 +31,5 @@ We decided to use the [Steamworks Web API](https://steamapi.xpaw.me/) for our pr
 - Supabase
 - Picture Slider
 - Font Awesome
+- Animate
 
