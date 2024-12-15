@@ -11,17 +11,17 @@ Steam Lists is a web application that enhances the Steam gaming experience by al
 
 # Technical Stack
 
-# Frontend:
+## Frontend:
 - HTML/CSS
 - - JavaScript (ES6+)
 
-# Libraries:
+## Libraries:
 
 - Swiper.js: Interactive game carousel
 - Animate.css: Smooth animations and transitions
 - Font Awesome: Icon library
 
-# Backend:
+## Backend:
 
 - Node.js: Runtime environment
 - Express.js: Web application framework
