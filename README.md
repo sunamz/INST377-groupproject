@@ -102,10 +102,16 @@ Creates a new game list with selected games.
 
 #### 3. **Delete List**
 **DELETE** `/api/lists/:listId`
+
 Deletes a specific game list.
+
+---
+
 #### 4. **Remove Game from List**
 **DELETE** `/api/lists/:listId/games/:gameId`
+
 Removes a specific game from a list.
+
 
 
 ### Known Bugs and Roadmap
