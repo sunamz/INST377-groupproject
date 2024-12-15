@@ -12,8 +12,9 @@ Steam Lists is a web application that enhances the Steam gaming experience by al
 # Technical Stack
 
 ## Frontend:
+
 - HTML/CSS
-- - JavaScript (ES6+)
+- JavaScript
 
 ## Libraries:
 
@@ -27,14 +28,19 @@ Steam Lists is a web application that enhances the Steam gaming experience by al
 - Express.js: Web application framework
 - Supabase: Database and authentication
 - CORS: Cross-origin resource sharing middleware
+- Vercel: Deployment
 
 # Group Members
+
 - Minh Chu - Full Stack Developer
 - Devin Perry - Full Stack Developer
 - Alice Sun - Full Stack Developer
 
 # Target Browsers
+
 - Google Chrome Web Browser
+- Firefox
+- Safari
 
 # Our API
 We decided to use the [Steamworks Web API](https://steamapi.xpaw.me/) for our project. This API is capable of retrieving a variety of Steam-related data, and we are using it to access the user's game library, as well as accessing the top games of each genre.
@@ -113,8 +119,42 @@ Deletes a specific game list.
 Removes a specific game from a list.
 
 
+## Troubleshooting
 
-### Known Bugs and Roadmap
-- No known bugs during development.
-- Future development of the app could include more analytics on the user's profile, such as breakdowns of time spent playing or games owned across popular genres, or filtering options for game reccomendations (such as a price range limitation).
+### Common Issues
+
+#### Steam ID Not Found
+- Ensure the Steam profile is public.
+- Try using the numeric Steam ID instead of a vanity URL.
+
+#### Games Not Loading
+- Check internet connection.
+- Verify Steam API status.
+- Clear browser cache.
+
+#### List Creation Failed
+- Ensure at least one game is selected.
+- Verify you're logged in.
+- Check database connection.
+
+--
+
+## Planned Features
+
+- Enhanced analytics for playtime, genre distribution, and trends.
+- Advanced filtering by price, genre, and release date.
+- Social features for sharing and collaborative list creation.
+- User experience improvements like themes, custom categories, and advanced search.
+
+---
+
+## Contributing
+
+We welcome contributions to Steam Lists! Please read our contributing guidelines before submitting pull requests.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
