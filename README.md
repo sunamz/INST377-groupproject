@@ -42,8 +42,6 @@ Steam Lists is a web application that enhances the Steam gaming experience by al
 # Target Browsers
 
 - Google Chrome Web Browser
-- Firefox
-- Safari
 
 # Our API
 We decided to use the [Steamworks Web API](https://steamapi.xpaw.me/) for our project. This API is capable of retrieving a variety of Steam-related data, and we are using it to access the user's game library, as well as accessing the top games of each genre.
