@@ -347,15 +347,3 @@ window.addEventListener('beforeunload', () => {
         localStorage.removeItem('favoriteGames');
     }
 });
-
-function checkSteamIdChange() {
-    const currentSteamId = localStorage.getItem('currentSteamId');
-    if (!currentSteamId) {
-        clearFavorites();
-        localStorage.removeItem('favoriteGames');
-    }
-}
-
-setInterval(checkSteamIdChange, 1000);
-
-// Add styles for recommendations
