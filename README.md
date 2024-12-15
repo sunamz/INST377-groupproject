@@ -21,6 +21,7 @@ Steam Lists is a web application that enhances the Steam gaming experience by al
 ## Libraries:
 
 - Swiper.js: Interactive game carousel
+- Tippy.js: Advance tooltips 
 - Animate.css: Smooth animations and transitions
 - Font Awesome: Icon library
 
