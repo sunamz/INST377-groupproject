@@ -137,7 +137,7 @@ Removes a specific game from a list.
 - Verify you're logged in.
 - Check database connection.
 
---
+---
 
 ## Planned Features
 
