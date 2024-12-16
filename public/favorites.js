@@ -232,7 +232,6 @@ function displayFavoriteGames(games) {
         console.error('Carousel element not found');
         return;
     }
-
     carousel.innerHTML = '';
     
     games.forEach(game => {
